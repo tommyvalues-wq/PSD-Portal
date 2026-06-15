@@ -1,0 +1,29 @@
+<%- include('layout-top') %>
+<section class="panel">
+  <div class="page-head">
+    <h1>Firefighters</h1>
+    <% if (user && ['owner','pst'].includes(user.role)) { %><a class="primary-btn" href="/firefighters/new">Add Firefighter</a><% } %>
+  </div>
+  <form method="GET" action="/firefighters" class="search-bar">
+    <input type="text" name="q" placeholder="Search by name, Roblox ID, rank, station, command level, or status..." value="<%= q || '' %>">
+    <select name="command">
+      <option value="">All Command Levels</option>
+      <% commandLevels.forEach(level => { %><option value="<%= level %>" <%= command === level ? 'selected' : '' %>><%= level %></option><% }) %>
+    </select>
+    <button class="primary-btn" type="submit">Search</button>
+    <a class="secondary-btn" href="/firefighters">Clear</a>
+  </form>
+  <table>
+    <thead><tr><th>Name</th><th>Rank</th><th>Station</th><th>Command Level</th><th>Status</th><th>Roblox ID</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% if (!firefighters.length) { %><tr><td colspan="7">No firefighters found.</td></tr><% } %>
+      <% firefighters.forEach(f => { %>
+        <tr>
+          <td><%= f.name %></td><td><%= f.rank %></td><td><%= f.station || '-' %></td><td><span class="badge command-<%= (f.command_level || 'No Command').split(' ')[0].toLowerCase() %>"><%= f.command_level || 'No Command' %></span></td><td><%= f.status %></td><td><%= f.roblox_id || '-' %></td>
+          <td><% if (user && ['owner','pst'].includes(user.role)) { %><a href="/firefighters/<%= f.id %>/edit">Edit</a><form method="post" action="/firefighters/<%= f.id %>/delete" class="inline-form"><button onclick="return confirm('Delete this firefighter?')">Delete</button></form><% } else { %>-<% } %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</section>
+<%- include('layout-bottom') %>
